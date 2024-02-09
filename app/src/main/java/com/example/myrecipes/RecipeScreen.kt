@@ -1,6 +1,7 @@
 package com.example.myrecipes
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -23,7 +24,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 
 @Composable
-fun RecipeScreen(modifier: Modifier = Modifier){
+fun RecipeScreen(modifier: Modifier = Modifier,
+                 viewstate : MainViewModel.ReceipeState,
+                 navigateToDetail: (Category) -> Unit){
     val recipeViewModel: MainViewModel= viewModel()
     val viewstate by recipeViewModel.categoriesState
     
@@ -38,7 +41,8 @@ fun RecipeScreen(modifier: Modifier = Modifier){
                 Text(text = "Error Occured")
             }
             else->{
-                CategoryScreen(categories = viewstate.list)
+                CategoryScreen(categories = viewstate.list,
+                    navigateToDetail )
             }
         }
         
@@ -46,22 +50,27 @@ fun RecipeScreen(modifier: Modifier = Modifier){
 }
 
 @Composable
-fun CategoryScreen(categories: List<Category>){
+fun CategoryScreen(categories: List<Category>,
+                   navigateToDetail:(Category) ->Unit){
     LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier.fillMaxSize() ){
 
         items(categories){
 
             category ->
-            CategoryItem(category = category)
+            CategoryItem(category = category,
+                navigateToDetail )
         }
     }
 
 }
 
 @Composable
-fun CategoryItem(category: Category){
+fun CategoryItem(category: Category,
+                 navigateToDetail: (Category) ->Unit){
     Column(modifier = Modifier
         .padding(8.dp)
+        .fillMaxSize()
+        .clickable { navigateToDetail(category) }
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally)
     {
@@ -71,14 +80,10 @@ fun CategoryItem(category: Category){
                 .fillMaxSize()
                 .aspectRatio(1f)
         )
-        
-        Text(text = "hey")
-
         Text(text = category.strCategory,
         color = Color.Black,
             style = TextStyle(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(top = 4.dp)
         )
-
     }
 }
